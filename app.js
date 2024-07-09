@@ -71,13 +71,16 @@ app.delete("/listings/:id", async (req, res) => {
   console.log(deletedListing);
   res.redirect("/listings");
 });
-app.post('/listings/:id/reviews', async (req, res) => {
-  const listing = await Listing.findById(req.params.id);
-  const newReview = new Review(req.body.review);
-  listing.reviews.push(newReview);
-  await newReview.save();
-  await listing.save();
-  res.redirect(`/listings/${listing._id}`);
+app.post("/listings/:id/reviews",async(req,res)=>{
+    let listing =await Listing.findById(req.params.id);
+    let newReview = new Review (req.body.review);
+
+    listing.reviews.push(newReview);
+
+    await newReview.save();
+    await listing.save();
+
+    res.redirect(`/listings/${listing._id}`);
 });
 // Middleware to catch all unmatched routes and create a 404 error
 app.all("*", (req, res, next) => {
