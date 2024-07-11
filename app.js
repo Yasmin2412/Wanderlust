@@ -9,6 +9,7 @@ const wrapAsync = require("./utils/WrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
 const {listingSchema,reviewSchema}=require("./schema.js")
 const Review = require("./models/review.js");
+const listings = require("./routes/listing.js");
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -43,6 +44,7 @@ const validateReview=(req,res,next)=>{
     next()
   }
 }
+app.use("/listings",listings)
 app.get("/listings", async (req, res) => {
   const allListings = await Listing.find({});
   res.render("listings/index.ejs", { allListings });
@@ -58,13 +60,7 @@ app.get("/listings/:id", async (req, res) => {
   res.render("listings/show.ejs", { listing });
 });
 
-app.post("/listings",
-  validateListing,
-  wrapAsync(async (req, res,next) => {
-  const newListing = new Listing(req.body.listing);
-  await newListing.save();
-  res.redirect("/listings");
-}));
+
 
 app.get("/listings/:id/edit",wrapAsync(async (req, res) => {
   let { id } = req.params;
