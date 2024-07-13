@@ -43,6 +43,14 @@
     border: none!important;
     margin-bottom:2rem ;
 }
+.custom-card{
+    border: 1px solid grey;
+    border-radius: 7px;
+    margin-top: 4px;
+    padding-top: 1rem;
+    margin-right: 0.75rem;
+    width: 280px;
+}
 .card-img-top{
 border-radius: 1rem!important;
 object-fit: cover!important;

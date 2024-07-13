@@ -9,7 +9,7 @@ const wrapAsync = require("./utils/WrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
 const {listingSchema,reviewSchema}=require("./schema.js")
 const Review = require("./models/review.js");
-const listings = require("./routes/listing.js");
+// const listings = require("./routes/listing.js");
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -44,7 +44,7 @@ const validateReview=(req,res,next)=>{
     next()
   }
 }
-app.use("/listings",listings)
+//  
 app.get("/listings", async (req, res) => {
   const allListings = await Listing.find({});
   res.render("listings/index.ejs", { allListings });
@@ -56,7 +56,8 @@ app.get("/listings/new", (req, res) => {
 
 app.get("/listings/:id", async (req, res) => {
   let { id } = req.params;
-  const listing = await Listing.findById(id);
+  const listing = await Listing.findById(id).populate("reviews");
+  console.log(listing); // Add this line to check the populated listing
   res.render("listings/show.ejs", { listing });
 });
 
@@ -104,6 +105,13 @@ app.post("/listings/:id/reviews", validateReview ,wrapAsync(async (req, res) => 
       res.status(500).send("Internal Server Error");
   }
 }));
+//delete reviews
+app.delete("/listings/:id/reviews/:reviewId",wrapAsync(async(req,res)=>{
+  let {id,reviewId}=req.params;
+  await Listing.findByIdAndUpdate(id,{$pull :{ reviews: reviewId}})
+  await Review.findByIdAndDelete(reviewId)
+  res.redirect(`/listings/${id}`);
+}))
 
 // Middleware to catch all unmatched routes and create a 404 error
 app.all("*", (req, res, next) => {

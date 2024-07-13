@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+// const ReviewModel = require("./models/review.js");
 
 const reviewSchema = new Schema({
   comment: String,
@@ -14,9 +15,9 @@ const reviewSchema = new Schema({
   }
 });
 
-const Review = mongoose.model("Review", reviewSchema);
-module.exports = Review;
-
+const Reviews = mongoose.model("Reviews", reviewSchema);
+module.exports = Reviews;
+// "https://unsplash.com/photos/blue-outdoor-pool-hDbCjHNdF48"
 const listingSchema = new Schema({
   title: { type: String, required: true },
   description: String,
@@ -36,6 +37,10 @@ const listingSchema = new Schema({
     ref: "Review"
   }]
 });
-
+listingSchema.post("findOneAndDelete",async(listing)=>{
+  if(listing){
+  await Reviews.deleteMany({_id: {$in: listing.reviews}})
+  }
+})
 const Listing = mongoose.model("Listing", listingSchema);
 module.exports = Listing;
