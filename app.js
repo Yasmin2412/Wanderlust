@@ -8,8 +8,14 @@ const methodOverride = require('method-override');
 const wrapAsync = require("./utils/WrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
 const {listingSchema,reviewSchema}=require("./schema.js")
-const Review = require("./models/review.js");
-// const listings = require("./routes/listing.js");
+const reviews = require("./models/review.js");
+const listingRoute = require("./routes/listing.js");
+const UsersRoute = require("./routes/users.js");
+const session = require('express-session')
+const flash=require("connect-flash")
+const passport=require("passport")
+const LocalStrategy=require("passport-local")
+const User=require("./models/user.js")
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -18,12 +24,46 @@ app.engine('ejs', ejsMate);
 app.use(methodOverride('_method'));
 app.use(express.json());
 
-
 app.use('/public', express.static(path.join(__dirname, 'public')));
-
-app.get("/", (req, res) => {
+const sessionOption= {
+  secret: "mysupersecertstring" ,
+  resave:false,
+  saveUninitialized  :true,
+  cookie: {
+    expires: Date.now()+7*24*60*60*1000,
+    maxAge: 7*24*60*60*1000,
+    httOnly : true
+  }
+ }
+ app.get("/", (req, res) => {
   res.send("Hi I am working");
 });
+app.use( session(sessionOption ))
+app.use(flash())
+app.use(passport.initialize())
+app.use(passport.session())
+passport.use(new LocalStrategy(User.authenticate))
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+app.use((req,res,next)=>{
+  res.locals.Done=req.flash("Done")
+  res.locals.error=req.flash("error")
+  next()
+})
+
+// app.get("/demo",async(req,res)=>{
+// let fakeUser=new User({
+//   email: "student@gmail.com",
+//   username: "delta 3.o"
+
+// })
+// let registerUser=await User.register(fakeUser,"Hey")
+// res.send(registerUser)
+// })
+app.use("/listings",listingRoute)
+app.use("/listings/:id/reviews",reviews)
+app.use("/",UsersRoute)
 
 
 const validateListing=(req,res,next)=>{

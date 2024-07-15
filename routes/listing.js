@@ -41,6 +41,10 @@ const validateListing=(req,res,next)=>{
   router.get("/:id", async (req, res) => {
     let { id } = req.params;
     const listing = await Listing.findById(id)
+    if(!listing){
+      req.flash("error","Listing not exists!")
+      res.redirect("/listings")
+    }
     res.render("listings/show.ejs", { listing });
   });
   
@@ -49,6 +53,7 @@ const validateListing=(req,res,next)=>{
     wrapAsync(async (req, res,next) => {
     const newListing = new Listing(req.body.listing);
     await newListing.save();
+    req.flash("Done","New Listing Created")
     res.redirect("/listings");
   }));
   
