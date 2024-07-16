@@ -49,6 +49,7 @@ passport.deserializeUser(User.deserializeUser());
 app.use((req,res,next)=>{
   res.locals.Done=req.flash("Done")
   res.locals.error=req.flash("error")
+  res.locals.currUser=req.user;
   next()
 })
 
@@ -64,26 +65,9 @@ app.use((req,res,next)=>{
 app.use("/listings",listingRoute)
 app.use("/listings/:id/reviews",reviews)
 app.use("/",UsersRoute)
-passport.use(new LocalStrategy(
-  function(username, password, done) {
-      // Replace this with your actual user authentication logic
-      if (username === 'username' && password === 'password') {
-          return done(null, { id: 1, username: 'username' });
-      } else {
-          return done(null, false, { message: 'Incorrect username or password.' });
-      }
-  }
-))
-// Serialize user
-passport.serializeUser(function(user, done) {
-  done(null, username.id);
-});
 
-// Deserialize user
-passport.deserializeUser(function(id, done) {
-  // Replace this with your actual user fetching logic
-  done(null, { id: 1, username: 'username' });
-});
+// Serialize user
+
 
 const validateListing=(req,res,next)=>{
   let {error}=listingSchema.validate(req.body);

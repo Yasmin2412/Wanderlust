@@ -7,6 +7,7 @@ const Listing = require("../models/listing.js");
 const {listingSchema,reviewSchema}=require("../schema.js")
 const Review = require("../models/review.js");
 const wrapAsync = require("../utils/WrapAsync.js");
+const {isLoggedIn} = require('../middleware.js');
 
 
 const validateListing=(req,res,next)=>{
@@ -34,7 +35,8 @@ const validateListing=(req,res,next)=>{
   });
 
 
-  router.get("/new", (req, res) => {
+  router.get("/new",isLoggedIn, (req, res) => {
+    
     res.render("listings/new.ejs");
   });
   
@@ -49,7 +51,7 @@ const validateListing=(req,res,next)=>{
   });
   
   router.post("/",
-    validateListing,
+    validateListing,isLoggedIn,
     wrapAsync(async (req, res,next) => {
     const newListing = new Listing(req.body.listing);
     await newListing.save();
@@ -57,7 +59,7 @@ const validateListing=(req,res,next)=>{
     res.redirect("/listings");
   }));
   
-  router.get("/:id/edit",wrapAsync(async (req, res) => {
+  router.get("/:id/edit",isLoggedIn,wrapAsync(async (req, res) => {
     let { id } = req.params;
     const listing = await Listing.findById(id);
     res.render("listings/edit.ejs", { listing });

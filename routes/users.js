@@ -4,11 +4,9 @@ const router=express.Router()
 const User=require("../models/user.js")
 const passport = require('passport');
 const flash=require("connect-flash")
-const bodyParser = require('body-parser');
 const wrapAsync = require("../utils/WrapAsync.js");
-const LocalStrategy = require('passport-local').Strategy;
-// Body parser middleware
-app.use(bodyParser.urlencoded({ extended: false }));
+
+
 
 router.get("/signup",(req,res)=>{
     res.render("./users/signup.ejs")
@@ -30,12 +28,20 @@ router.get("/login",(req,res)=>{
     res.render("./users/login.ejs")
 })
 
-router.post('/login', passport.authenticate('local', {
-    failureRedirect: '/login',
-    failureFlash: true
-}), wrapAsync(async (req, res) => {
-    res.send('You Login Successfully');
-}));
+router.post("/login",  passport.authenticate('local', { failureRedirect: '/login',failureFlash: true }),wrapAsync(async(req,res)=>{
+    res.send("You Login Successfully")
+})) 
 
-app.use('/', router);
+
+
+
+router.get("/logout",(req,res,next)=>{
+    req.logout((err)=>{
+        if(err){
+            nrxt(err)
+        }
+        req.flash("Done","Logout Successfully")
+        res.redirect("/listings")
+    })
+})
 module.exports=router;
