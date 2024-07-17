@@ -5,6 +5,8 @@ const User=require("../models/user.js")
 const passport = require('passport');
 const flash=require("connect-flash")
 const wrapAsync = require("../utils/WrapAsync.js");
+const { saveRedirectUrl } = require("../middleware.js");
+
 
 
 
@@ -28,9 +30,15 @@ router.get("/login",(req,res)=>{
     res.render("./users/login.ejs")
 })
 
-router.post("/login",  passport.authenticate('local', { failureRedirect: '/login',failureFlash: true }),wrapAsync(async(req,res)=>{
-    res.send("You Login Successfully")
-})) 
+router.post("/login", saveRedirectUrl,
+     passport.authenticate('local',
+     { failureRedirect: '/login',
+       failureFlash: true }),
+       wrapAsync(async(req,res)=>{
+       req.flash("Done","Welcome to wanderlust")
+       res.redirect(res.locals.redirectUrl)
+}
+)) 
 
 
 
