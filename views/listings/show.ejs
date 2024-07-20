@@ -59,7 +59,7 @@
                     <div class="card">
                         <div class="card-body">
                             <!-- Assuming review.author.username exists, or you should replace 'John Doe' with the actual author's name -->
-                            <h5 class="card-title"><%= review.author.username || 'John Doe' %></h5>
+                            <h5 class="card-title">@<%= review.author.username %></h5>
                             <p class="card-text"><%= review.comment %></p>
                             <p class="card-text"><%= review.rating %> Star</p>
                             <!-- Delete button for each review -->
