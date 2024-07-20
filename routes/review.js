@@ -16,6 +16,27 @@ router.post("/",isLoggedIn,validateReview,wrapAsync(async(req,res)=>{
     listing.reviews.push(newReview);
     await newReview.save();
     await listing.save();
-    req.flash("Done","new review Added")
+    req.flash("Done","new review Added");
+    res.redirect(`/listings/${req.params.id}`);
 }))
+
+
+
+// Route to delete a review
+router.delete('/:reviewId', isLoggedIn,async (req, res) => {
+    const { id, reviewId } = req.params;
+    
+    try {
+        await Listing.findByIdAndUpdate(id, { $pull: {reviews: reviewId } });
+        await Review.findByIdAndDelete(reviewId);
+        
+        req.flash('Done', 'Review deleted!');
+        res.redirect(`/listings/${id}`);
+    } catch (err) {
+        console.error(err);
+        req.flash('error', 'Something went wrong. Please try again.');
+        res.redirect(`/listings/${id}`);
+    }
+});
+
 module.exports=router;

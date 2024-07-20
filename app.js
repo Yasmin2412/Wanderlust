@@ -10,6 +10,7 @@ const ExpressError = require("./utils/ExpressError.js");
 const {listingSchema,reviewSchema}=require("./schema.js")
 const reviews = require("./models/review.js");
 const listingRoute = require("./routes/listing.js");
+const reviewRoute = require("./routes/review.js");
 const UsersRoute = require("./routes/users.js");
 const session = require('express-session')
 const flash=require("connect-flash")
@@ -63,7 +64,7 @@ app.use((req,res,next)=>{
 // res.send(registerUser)
 // })
 app.use("/listings",listingRoute)
-app.use("/listings/:id/reviews",reviews)
+app.use("/listings/:id/reviews",reviewRoute)
 app.use("/",UsersRoute)
  
 // Serialize user
@@ -152,7 +153,8 @@ app.post("/listings/:id/reviews", validateReview ,wrapAsync(async (req, res) => 
 app.delete("/listings/:id/reviews/:reviewId",wrapAsync(async(req,res)=>{
   let {id,reviewId}=req.params;
   await Listing.findByIdAndUpdate(id,{$pull :{ reviews: reviewId}})
-  await Review.findByIdAndDelete(reviewId)
+  await reviews.findByIdAndDelete(reviewId)
+  req.flash("error","deleted!")
   res.redirect(`/listings/${id}`);
 }))
 
