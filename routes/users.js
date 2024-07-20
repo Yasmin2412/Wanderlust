@@ -31,12 +31,12 @@ router.get("/login",(req,res)=>{
 })
 
 router.post("/login", saveRedirectUrl,
-     passport.authenticate('local',
-     { failureRedirect: '/login',
-       failureFlash: true }),
-       wrapAsync(async(req,res)=>{
-       req.flash("Done","Welcome to wanderlust")
-       res.redirect(res.locals.redirectUrl)
+    passport.authenticate('local',
+    { failureRedirect: '/login',
+      failureFlash: true }),
+      wrapAsync(async(req,res)=>{
+      req.flash("Done","Welcome to wanderlust")
+      res.redirect(res.locals.redirectUrl||"/listings");
 }
 )) 
 

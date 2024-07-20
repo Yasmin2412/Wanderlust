@@ -1,70 +1,76 @@
 <% layout("/layouts/boilerPlate") %>
 <div class="row mt-3">
     <div class="col-8 offset-3">
-    <h3><%= listing.title%></h3>
+        <!-- Displaying the listing title -->
+        <h3><%= listing.title %></h3>
     </div>
-    <div class="card col-6 offset-3 " >
-        <img src="<%= listing.image.url%>" class="card-img-top show-img " alt="...">
-
+    <div class="card col-6 offset-3">
+        <!-- Displaying the listing image -->
+        <img src="<%= listing.image.url %>" class="card-img-top show-img" alt="...">
         <div class="card-body">
-          <p class="card-text"><b><%= listing.title%> </b>          </p>
-            <p class="card-text"><i><b> Owned By </b><%= listing.owner.username %></i><br/></p>
+            <!-- Displaying listing details -->
+            <p class="card-text"><b><%= listing.title %></b></p>
+            <p class="card-text"><i><b>Owned By </b><%= listing.owner.username %></i><br/></p>
             <p class="card-text"><%= listing.description %><br></p>
-             &#8377;<%= listing.price.toLocaleString("en-IN") %>/night
-             <p class="card-text"><%= listing.location %><br></p>
-             <p class="card-text"> <%= listing.country %>  <br></p>
-
-          </div>
-      </div>
-      <br/>
-  
-        <div class="btns mb-4"> 
-        <a href="/listings/<%= listing._id %>/edit" class="btn btn-dark edit-btn col-1 offset-3">Edit</a>
-        <form method="post" action="/listings/<%= listing._id %>?_method=delete">
-            <button class="btn btn-dark  offset-3">Delete</button>
+            &#8377;<%= listing.price.toLocaleString("en-IN") %>/night
+            <p class="card-text"><%= listing.location %><br></p>
+            <p class="card-text"><%= listing.country %><br></p>
+        </div>
+    </div>
+    <br/>
+    <!-- Check if the current user is the owner of the listing -->
+    <% if(currUser && listing.owner._id.equals(currUser._id)) { %>
+        <div class="btns mb-4">
+            <!-- Edit button for the listing -->
+            <a href="/listings/<%= listing._id %>/edit" class="btn btn-dark edit-btn col-1 offset-3">Edit</a>
+            <!-- Delete button for the listing -->
+            <form method="post" action="/listings/<%= listing._id %>?_method=DELETE">
+                <button class="btn btn-dark offset-3">Delete</button>
             </form>
         </div>
-    
-      
-     
-        <div class="col-8 offset-3 mb-3">
-          <hr/>
-          <h4>Leave a Review</h4>
-          <form  action="/listings/<%= listing._id %>/reviews" method="post" novalidate class="needs-validation">
-              <div class="mb-3 mt-3">
-                  <label for="rating" class="form-label">Ratings</label>
-                  <input type="range" min="1" max="5" class="form-range" id="rating" name="review[rating]" >
-              </div>
-              <div class="mb-3 mt-3">
-                  
-                  <label for="comment" class="form-label">Comments</label>
-                  <div class="invalid-feedback">
-                    Please choose a country.
-                  </div>
-                  <textarea name="review[comment]" id="comment" cols="30" rows="5" class="form-control" required></textarea>
-                  
+    <% } %>
+   <% if ( currUser){ %>
+    <div class="col-8 offset-3 mb-3">
+        <hr/>
+        <!-- Leave a Review form -->
+        <h4>Leave a Review</h4>
+        <form action="/listings/<%= listing._id %>/reviews" method="post" novalidate class="needs-validation">
+            <div class="mb-3 mt-3">
+                <label for="rating" class="form-label">Ratings</label>
+                <input type="range" min="1" max="5" class="form-range" id="rating" name="review[rating]">
+            </div>
+            <div class="mb-3 mt-3">
+                <label for="comment" class="form-label">Comments</label>
+                <div class="invalid-feedback">
+                    Please provide a comment.
                 </div>
-              <button class="btn btn-outline-dark" type="submit">Submit</button>
-          </form>
-          <hr/>
-          <p><b>All REVIEWS</b></p>
-          <div class="row ">
-            <% for (review of listing.reviews) { %>
-              <div class=" custom-card col-5 ms-3 mb-3">
-                <div class="card ">
-                  <div class="card-body">
-                    <h5 class="card-title">John Doe</h5>
-                    <p class="card-text"><%= review.comment %></p>
-                    <p class="card-text"><%= review.rating %> Star</p>
-                    <form class="mb-3" method="post" action="/listings/<%= listing._id %>/reviews/<%=review._id%>?_method=Delete">
-                    <button class="btn btn-dark btn-sm ">Delete</button>
-                  </form>
-                  </div>
+                <textarea name="review[comment]" id="comment" cols="30" rows="5" class="form-control" required></textarea>
+            </div>
+            <button class="btn btn-outline-dark" type="submit">Submit</button>
+        </form>
+    </div>
+    <% } %>
+    <div class="col-8 offset-3">
+        <p><b>All REVIEWS</b></p>
+        <div class="row">
+            <!-- Loop through each review and display it -->
+            <% for (let review of listing.reviews) { %>
+                <div class="custom-card col-5 ms-3 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <!-- Assuming review.author.username exists, or you should replace 'John Doe' with the actual author's name -->
+                            <h5 class="card-title"><%= review.author.username || 'John Doe' %></h5>
+                            <p class="card-text"><%= review.comment %></p>
+                            <p class="card-text"><%= review.rating %> Star</p>
+                            <!-- Delete button for each review -->
+                            <form class="mb-3" method="post" action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE">
+                                <button class="btn btn-dark btn-sm">Delete</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-               
-              </div>
             <% } %>
-          </div>
-      </div>
+        </div>
+    </div>
 </div>
 <script src="/public/js/script.js"></script>

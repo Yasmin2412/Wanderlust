@@ -2,32 +2,14 @@ const mongoose = require('mongoose');
 const express = require("express");
 const app = express();
 const router = express.Router()
-const ExpressError = require("../utils/ExpressError.js");
 const Listing = require("../models/listing.js");
-const { listingSchema, reviewSchema } = require("../schema.js")
 const Review = require("../models/review.js");
 const wrapAsync = require("../utils/WrapAsync.js");
-const { isLoggedIn } = require('../middleware.js');
-const { isOwner} = require('../middleware.js');
+const { isLoggedIn,isOwner,validateListing } = require('../middleware.js');
 
-const validateListing = (req, res, next) => {
-  let { error } = listingSchema.validate(req.body);
-  if (error) {
-    let errMsg = error.details.map((el) => el.message).join(",")
-    throw new ExpressError(400, errMsg)
-  } else {
-    next()
-  }
-}
-const validateReview = (req, res, next) => {
-  let { error } = reviewSchema.validate(req.body);
-  if (error) {
-    let errMsg = error.details.map((el) => el.message).join(",")
-    throw new ExpressError(400, errMsg)
-  } else {
-    next()
-  }
-}
+
+
+
 router.get("/", async (req, res) => {
   const allListings = await Listing.find({});
   res.render("listings/index.ejs", { allListings });
@@ -70,11 +52,11 @@ router.put("/:id",isLoggedIn,isOwner, validateListing,async (req, res) => {
   res.redirect(`/listings/${id}`);
 });
 
-router.delete("/:id",isLoggedIn,isOwner, validateListing, async (req, res) => {
+router.delete("/:id",isLoggedIn,isOwner,wrapAsync(async (req, res) => {
   let { id } = req.params;
   let deletedListing = await Listing.findByIdAndDelete(id);
   console.log(deletedListing);
   req.flash("Done","Listing Deleted")
   res.redirect("/listings");
-});
+}));
 module.exports = router

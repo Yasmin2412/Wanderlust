@@ -133,7 +133,7 @@ app.post("/listings/:id/reviews", validateReview ,wrapAsync(async (req, res) => 
           return res.status(404).send("Listing not found");
       }
 
-      let newReview = new Review(req.body.review);
+      let newReview = new reviews(req.body.review);
       listing.reviews.push(newReview);
 
       await newReview.save();
