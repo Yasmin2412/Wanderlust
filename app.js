@@ -100,8 +100,13 @@ app.get("/listings/new", (req, res) => {
 
 app.get("/listings/:id", async (req, res) => {
   let { id } = req.params;
-  const listing = await Listing.findById(id).populate("reviews");
-  console.log(listing); // Add this line to check the populated listing
+  const listing = await Listing.findById(id)
+    .populate('owner', 'username') // Populate the owner field
+    .populate({
+      path: 'reviews',
+      populate: { path: 'author', select: 'username' } // Populate the author field within reviews
+    });
+  console.log(listing); // Check the populated listing
   res.render("listings/show.ejs", { listing });
 });
 
