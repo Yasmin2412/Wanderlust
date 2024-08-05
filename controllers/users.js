@@ -7,7 +7,7 @@ module.exports.signRoute=async(req,res)=>{
         let { username,email,password} =req.body;
     const newUser= new User({email,username});
     const registeredUser=await User.register(newUser,password)
-    console.log(registeredUser);
+    // console.log(registeredUser);
     req.flash("Done","Welcome to Wanderlust")
     res.redirect("/listings")
     }catch(e){

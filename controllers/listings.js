@@ -2,6 +2,7 @@ const Listing = require("../models/listing.js");
 
 module.exports.index=async (req, res) => {
     const allListings = await Listing.find({});
+    // console.log("hello");
     res.render("listings/index.ejs", { allListings });
   }
   module.exports.NewRoute=(req, res) => {
@@ -14,7 +15,7 @@ module.exports.index=async (req, res) => {
       req.flash("error", "Listing not exists!")
       res.redirect("/listings")
     }
-    console.log(listing)
+    // console.log(listing)
     res.render("listings/show.ejs", { listing });
   }
   module.exports.newListing=async (req, res, next) => {
@@ -35,6 +36,7 @@ module.exports.index=async (req, res) => {
   }
   module.exports.updateRoute=async (req, res) => {
     let { id } = req.params;
+    // console.log(req.body);
     let listing =await Listing.findByIdAndUpdate(id, req.body.listing);
     if(typeof req.file!=="undefined"){
     let url =req.file.path;
@@ -49,8 +51,7 @@ module.exports.index=async (req, res) => {
   module.exports.deleteRoute=async (req, res) => {
     let { id } = req.params;
     let deletedListing = await Listing.findByIdAndDelete(id);
-    console.log(deletedListing);
+    // console.log(deletedListing);
     req.flash("Done","Listing Deleted")
     res.redirect("/listings");
   }
- 

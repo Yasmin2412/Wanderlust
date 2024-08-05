@@ -1,31 +1,35 @@
-const mongoose = require('mongoose');
-const express = require("express");
-const app = express();
-const router = express.Router()
-const Listing = require("../models/listing.js");
-const wrapAsync = require("../utils/WrapAsync.js");
-const { isLoggedIn,isOwner,validateListing ,isReviewAuthor} = require('../middleware.js');
-const listingController=require("../controllers/listings.js")
-const multer  = require('multer')
-const {storage}=require("../cloudnairy.js")
-const upload = multer({ storage})
+const express=require("express");
+const router=express.Router();
 
+//error handling for async mongoose error and custom errors 
+const asyncWrap=require("../utils/WrapAsync.js");
+// const ExpressErr=require("../utilities/expressError.js");
+
+const multer=require("multer");
+const {storage}=require("../cloudnairy.js");
+const upload=multer({storage});
+
+//middleware require
+const {isLoggedIn, isOwner, validateListing}=require("../middleware.js");
+
+//controller require
+const listingController = require("../controllers/listings.js");
+
+
+//routes
 
 router.route("/")
-.get(listingController.index)
-.post(isLoggedIn,
-  upload.single("listing[image][url]"),
-  wrapAsync(listingController.newListing))
+.get(asyncWrap(listingController.index))
+.post(isLoggedIn,upload.single("listing[image][url]"),validateListing,asyncWrap(listingController.newListing))
 
-router.get("/new", isLoggedIn, listingController.NewRoute);
+router.get("/new",isLoggedIn,listingController.NewRoute);
 
 router.route("/:id")
-router.get(listingController.showRoute)
-.put(isLoggedIn,isOwner,
-  upload.single("listing[image][url]"),
-  validateListing,listingController.updateRoute)
-.delete(isLoggedIn,isOwner,wrapAsync(listingController.deleteRoute));
+.get(asyncWrap(listingController.showRoute))
+.put(isLoggedIn,isOwner,upload.single("listing[image][url]"),asyncWrap(listingController.updateRoute))
+.delete(isLoggedIn,isOwner,asyncWrap(listingController.deleteRoute))
+
+router.get("/:id/edit",isLoggedIn,isOwner,asyncWrap(listingController.editRoute));
 
 
-router.get("/:id/edit", isLoggedIn,isOwner, wrapAsync(listingController.editRoute));
-module.exports = router
+module.exports=router;
