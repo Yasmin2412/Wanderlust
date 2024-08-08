@@ -32,6 +32,8 @@ module.exports.index=async (req, res) => {
   module.exports.editRoute=async (req, res) => {
     let { id } = req.params;
     const listing = await Listing.findById(id);
+    // let oringinalImage=listing.image.url;
+    // oringinalImage.replace("/upload","/upload/h_300,w_250,e_b")
     res.render("listings/edit.ejs", { listing });
   }
   module.exports.updateRoute=async (req, res) => {

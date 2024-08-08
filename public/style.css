@@ -89,3 +89,4 @@ width: 100%!important;
 .btns{
     display: flex;
 }
+#map { width: 600px; height: 400px; }

@@ -11,6 +11,9 @@
                 <label for="description" class="form-label">Description</label>
                 <textarea name="listing[description]" class="form-control" required><%= listing.description %></textarea>
             </div>
+            <div class="mb-3"><i>Original image </i><br>
+                <img src="<%=listing.image.url %>" alt="Edit image" class="src" height="200px" width="350px">
+            </div>
             <div class="mb-3">
                 <label for="image" class="form-label">Upload New Image</label>
                  <input name="listing[image][url]"  type="file" class="form-control"/>
